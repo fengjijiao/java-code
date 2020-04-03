@@ -6,14 +6,34 @@ public class MyClass {
       int z=(x>>16)&0xff;
       System.out.printf("%s,%s,%s\n", Integer.toBinaryString(y), Integer.toBinaryString(z), Integer.toBinaryString(p));
       //start
-      int k=0xffe0;
+      /*int k=0x0000d4;
       System.out.println(k);//4080
       System.out.println(Integer.toBinaryString(k));
       byte[] b = intToBytes(k);//int转byte[]
-      int c = bytesToInt(b);//byte[]转int
-      System.out.println(c);
-      System.out.println(Integer.toBinaryString(c));
+      System.out.println(bytesToHexString(b));*/
+      int c = bytesToInt(new byte[]{(byte)0x00,(byte)0x00,(byte)0xd4});//byte[]转int
+      System.out.println("c:"+Integer.toBinaryString(c));
+      System.out.println("s:"+Integer.toBinaryString((byte)0xd4));
+      /*int d = bytesToInt(b);//byte[]转int
+      System.out.println(d);
+      System.out.println(Integer.toBinaryString(d));*/
       //end
+    }
+    /**
+     * byte数组转16进制字符串
+     * @param bArray
+     * @return
+     */
+    public static final String bytesToHexString(byte[] bArray) {
+        StringBuffer sb = new StringBuffer(bArray.length);
+        String sTemp;
+        for (int i = 0; i < bArray.length; i++) {
+            sTemp = Integer.toHexString(0xFF & bArray[i]);
+            if (sTemp.length() < 2)
+                sb.append(0);
+            sb.append(sTemp.toUpperCase());
+        }
+        return sb.toString();
     }
     //int转为byte数组
     public static byte[] intToBytes(int a) {
@@ -56,11 +76,14 @@ public class MyClass {
         int rlen = 0;//真实长度
         for(int i=0;i<len;i++) {
             int b2 = int8InactivePositionSet0(bArr[i]);
+            //System.out.println("I:"+Integer.toBinaryString(b2));
             res = res | bArr[i];
             if(i != len-1) {
                 res = res<<8;
             }
-            rlen += Integer.toBinaryString(b2).length();
+            if(b2 != 0) {
+                rlen += Integer.toBinaryString(b2).length();
+            }
             //System.out.println("I:"+Integer.toBinaryString(b2));
             //System.out.println("A:"+Integer.toBinaryString(res));
         }
