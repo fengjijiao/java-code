@@ -6,14 +6,14 @@ public class MyClass {
       int z=(x>>16)&0xff;
       System.out.printf("%s,%s,%s\n", Integer.toBinaryString(y), Integer.toBinaryString(z), Integer.toBinaryString(p));
       //start
-      /*int k=0x0000d4;
+      /*int k=0x000308;
       System.out.println(k);//4080
       System.out.println(Integer.toBinaryString(k));
       byte[] b = intToBytes(k);//int转byte[]
       System.out.println(bytesToHexString(b));*/
-      int c = bytesToInt(new byte[]{(byte)0x00,(byte)0x00,(byte)0xd4});//byte[]转int
+      int c = bytesToInt(new byte[]{(byte)0x00,(byte)0x03,(byte)0x08});//byte[]转int
       System.out.println("c:"+Integer.toBinaryString(c));
-      System.out.println("s:"+Integer.toBinaryString((byte)0xd4));
+      System.out.println("s:"+Integer.toBinaryString((byte)0x000308));
       /*int d = bytesToInt(b);//byte[]转int
       System.out.println(d);
       System.out.println(Integer.toBinaryString(d));*/
@@ -74,6 +74,7 @@ public class MyClass {
         int len = bArr.length;
         int res = 0;
         int rlen = 0;//真实长度
+        boolean zeroStarted = false;
         for(int i=0;i<len;i++) {
             int b2 = int8InactivePositionSet0(bArr[i]);
             //System.out.println("I:"+Integer.toBinaryString(b2));
@@ -82,7 +83,12 @@ public class MyClass {
                 res = res<<8;
             }
             if(b2 != 0) {
-                rlen += Integer.toBinaryString(b2).length();
+                if(zeroStarted) {
+                    rlen += 8;
+                }else {
+                    rlen += Integer.toBinaryString(b2).length();
+                }
+                if(!zeroStarted) zeroStarted = true;
             }
             //System.out.println("I:"+Integer.toBinaryString(b2));
             //System.out.println("A:"+Integer.toBinaryString(res));
