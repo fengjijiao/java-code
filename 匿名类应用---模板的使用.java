@@ -19,3 +19,6 @@ abstract class STemplate {
     }
     abstract void code();
 }
+/*
+Time consuming: 9ms
+*/
