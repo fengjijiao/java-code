@@ -9,6 +9,12 @@ public class test11 {
         Thread thread1 = new Thread(user1);
         thread.start();
         thread1.start();
+        /*
+        *余额:2000
+        *余额:-1000
+        *Thread-1已消费:3000
+        *Thread-0已消费:3000
+        */
     }
 }
 class User implements Runnable {
