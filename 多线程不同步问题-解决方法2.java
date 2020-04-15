@@ -4,16 +4,15 @@ public class test11 {
     public static void main(String[] args) {
         Account account = new Account();
         User user = new User(account, 3000);
-        Thread thread = new Thread(user);
-        User user1 = new User(account, 3000);
-        Thread thread1 = new Thread(user1);
+        Thread thread = new Thread(user, "客户端1");
+        User user1 = new User(account, 4000);
+        Thread thread1 = new Thread(user1, "客户端2");
         thread.start();
         thread1.start();
         /*
-        *余额:2000
-        *余额不足！
-        *Thread-0已消费:3000
-        *Thread-1已消费:3000
+        *客户端1已消费:3000
+        *客户端1余额:2000
+         *客户端2余额不足！
         */
     }
 }
@@ -26,20 +25,20 @@ class User implements Runnable {
     }
     @Override
     public void run() {
-        account.consume(m);
-        System.out.println(Thread.currentThread().getName() + "已消费:" + m);
+        account.consume(Thread.currentThread().getName(), m);
     }
 }
 class Account {
-    int money = 5000;
-    void consume(int m) {
-        synchronized(this) {//加上synchronized(对象)
+    static int money = 5000;
+    void consume(String name, int m) {
+        synchronized (this) {//加上synchronized(对象),参数为要同步的对象，内容为要同步的代码块
             if (money - m < 0) {
-                System.out.println("余额不足！");
+                System.out.println(name + "余额不足！");
                 return;
             }
+            System.out.println(name + "已消费:" + m);
             money -= m;
-            System.out.println("余额:" + money);
+            System.out.println(name + "余额:" + money);
         }
     }
 }
