@@ -36,7 +36,7 @@ public class SplitFileOperater {
         RandomAccessFile raf = null;
         try {
             //获取目标文件 预分配文件所占的空间 在磁盘中创建一个指定大小的文件   r 是只读
-            raf = new RandomAccessFile(new File(getFilePath(dirPath, file)), "r");
+            raf = new RandomAccessFile(new File(FileOperater.getFilePath(dirPath, file)), "r");
             long length = raf.length();//文件的总长度
             long maxSize = length / count;//文件切片后的长度
             long offSet = 0L;//初始化偏移量
@@ -76,9 +76,9 @@ public class SplitFileOperater {
         long endPointer = 0L;
         try {
             //申明文件切割后的文件磁盘
-            RandomAccessFile in = new RandomAccessFile(new File(getFilePath(dirPath, file)), "r");
+            RandomAccessFile in = new RandomAccessFile(new File(FileOperater.getFilePath(dirPath, file)), "r");
             //定义一个可读，可写的文件并且后缀名为.tmp的二进制文件
-            RandomAccessFile out = new RandomAccessFile(new File(getFilePath(dirPath, a + "_" + index + ".tmp")), "rw");
+            RandomAccessFile out = new RandomAccessFile(new File(FileOperater.getFilePath(dirPath, a + "_" + index + ".tmp")), "rw");
 
             //申明具体每一文件的字节数组
             byte[] b = new byte[1024];
@@ -112,11 +112,11 @@ public class SplitFileOperater {
         RandomAccessFile raf = null;
         try {
             //申明随机读取文件RandomAccessFile
-            raf = new RandomAccessFile(new File(getFilePath(dirPath, file)), "rw");
+            raf = new RandomAccessFile(new File(FileOperater.getFilePath(dirPath, file)), "rw");
             //开始合并文件，对应切片的二进制文件
             for (int i = 0; i < tempCount; i++) {
                 //读取切片文件
-                RandomAccessFile reader = new RandomAccessFile(new File(getFilePath(dirPath, a + "_" + i + ".tmp")), "r");
+                RandomAccessFile reader = new RandomAccessFile(new File(FileOperater.getFilePath(dirPath, a + "_" + i + ".tmp")), "r");
                 byte[] b = new byte[1024];
                 int n = 0;
                 //先读后写
@@ -139,9 +139,27 @@ public class SplitFileOperater {
         String[] fileMD5s = new String[count];
         String[] fileNames = getSplitFileNames(file, count);
         for(int i=0;i<count;i++) {
-            fileMD5s[i] = FileOperater.getFileMD5(new File(getFilePath(dirPath, fileNames[i])));
+            fileMD5s[i] = FileOperater.getFileMD5(new File(FileOperater.getFilePath(dirPath, fileNames[i])));
         }
         return fileMD5s;
+    }
+
+    public String[] getSplitFileSHA256s(String file, int count) {
+        String[] fileSHA256s = new String[count];
+        String[] fileNames = getSplitFileNames(file, count);
+        for(int i=0;i<count;i++) {
+            fileSHA256s[i] = FileOperater.getFileSHA256(new File(FileOperater.getFilePath(dirPath, fileNames[i])));
+        }
+        return fileSHA256s;
+    }
+
+    public long[] getSplitFileSizes(String file, int count) {
+        long[] fileSizes = new long[count];
+        String[] fileNames = getSplitFileNames(file, count);
+        for(int i=0;i<count;i++) {
+            fileSizes[i] = FileOperater.getFileSize(new File(FileOperater.getFilePath(dirPath, fileNames[i])));
+        }
+        return fileSizes;
     }
 
     public String[] getSplitFileNames(String file, int count) {
@@ -157,16 +175,8 @@ public class SplitFileOperater {
         String a = file.split(fileExtension)[0];//分割出文件名
         String[] fileNames = new String[count];
         for(int i=0;i<count;i++) {
-            fileNames[i] = getFilePath(dirPath, a + "_" + i + ".tmp");
+            fileNames[i] = FileOperater.getFilePath(dirPath, a + "_" + i + ".tmp");
         }
         return fileNames;
-    }
-
-    public String getFilePath(String dirPath, String fileName) {
-        if(dirPath.endsWith("\\") || dirPath.endsWith("/")) {
-            return dirPath + fileName;
-        }else {
-            return dirPath + "/" + fileName;
-        }
     }
 }
