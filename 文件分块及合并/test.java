@@ -14,16 +14,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
 
+import static org.asynchttpclient.Dsl.*;
+
 public class test {
     public static void main(String[] args) {
         System.out.println("开始运行");
+        HttpUtils httpUtils = new HttpUtils(asyncHttpClient(config().setProxyServer(proxyServer("127.0.0.1", 1083)).setReadTimeout(10*60000).setRequestTimeout(10*60000)));
         AppUpgradeInfo appUpgradeInfo = new AppUpgradeInfo();
         boolean zipped = true;
-        String releaseNotesString = "- 切换新的下载方式，提升下载更新速率！\n" + "- 从6.2开始仅大更新会显示在这里\n" + "- 请注意：国内网络下载速率可能会不佳！！！\n" + "- 释出于" + new Date().toString() + "\n" + "- 使用自动化程式生成" + "\n" + "- 作者：爱笑的祥和是**";
+        String apkUrl = "https://www.fjj.us/cache/app-release.apk";
+        String releaseNotesString = "- 已启用连接状态检查机制，在某些地区运营商可能会出现误报网路未连接!!!\n" + "- 哟与新下载方式人工操作过于复杂，故现改为自动化！\n" + "- 从6.2开始仅大更新会显示在这里\n" + "- 请注意：国内网络下载速率可能会不佳！！！\n" + "- 释出于" + new Date().toString() + "\n" + "- 使用自动化程式生成" + "\n" + "- 作者：爱笑的祥和是**";
         String dirPath = "C:\\Users\\jijiao\\IdeaProjects\\test\\src\\test3";
-        String apkfile="app-release.apk"; //文件的路径
-        String file="app-release.zip"; //文件的路径
-        String outfile="out.zip"; //文件的路径
+        String apkfile= "app-release.apk"; //文件的路径
+        String file = "app-release.zip"; //文件的路径
+        String outfile = "out.zip"; //文件的路径
         String fileExtension = file.split("\\.")[1];
         int count=10;  //将文件切割成多少份
         try {
@@ -49,17 +53,37 @@ public class test {
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
+        try {
+            apkUrl = httpUtils.uploadFile(FileOperater.getFilePath(dirPath, apkfile));
+            System.out.println("总APK, 地址：" + apkUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("总APK, 上传失败！");
+            System.exit(-1);
+        }
         ZipUtils.zipFiles(FileOperater.getFilePath(dirPath, file), FileOperater.getFilePath(dirPath, apkfile));
         SplitFileOperater splitFileOperater = new SplitFileOperater(fileExtension, dirPath);
         splitFileOperater.getSplitFile(file, count);//分割
         String[] fileNames = splitFileOperater.getSplitFileNames(file, count);
+        String[] fileUrls = new String[count];
+        for(int i=0;i<fileNames.length;i++) {
+            try {
+                String fileUrl = httpUtils.uploadFile(FileOperater.getFilePath(dirPath, fileNames[i]));
+                fileUrls[i] = fileUrl;
+                System.out.println("片段：" + i + ", 地址：" + fileUrl);
+            } catch (Exception e) {
+                e.printStackTrace();
+                System.out.println("片段：" + i + ", 上传失败！");
+                System.exit(-1);
+            }
+        }
         String[] fileMD5s = splitFileOperater.getSplitFileMD5s(file, count);
         String[] fileSHA256s = splitFileOperater.getSplitFileSHA256s(file, count);
         long[] fileSizes = splitFileOperater.getSplitFileSizes(file, count);
         //splitFileOperater.merge(outfile, file,count);//合并
         appUpgradeInfo.setLatestVersion(latestVersion);
         appUpgradeInfo.setLatestVersionCode(latestVersionCode);
-        appUpgradeInfo.setUrl("https://www.fjj.us/cache/app-release.apk");
+        appUpgradeInfo.setUrl(apkUrl);
         appUpgradeInfo.setSize(FileOperater.getFileSize(new File(FileOperater.getFilePath(dirPath, apkfile))));
         CheckCodes checkCodes = new CheckCodes();
         checkCodes.setMd5(FileOperater.getFileMD5(new File(FileOperater.getFilePath(dirPath, apkfile))));
@@ -75,7 +99,7 @@ public class test {
              checkCodes1.setMd5(fileMD5s[i]);
              checkCodes1.setSha256(fileSHA256s[i]);
              fs.setCheckCodes(checkCodes1);
-             fs.setUrl("https://www.fjj.us/cache/" + fileNames[i]);
+             fs.setUrl(fileUrls[i]);
              fs.setSize(fileSizes[i]);
             fileSplitItems[i] = fs;
         }
@@ -125,5 +149,6 @@ public class test {
             e.printStackTrace();
         }
         System.out.println("运行完成！");
+        System.exit(-1);
     }
 }
