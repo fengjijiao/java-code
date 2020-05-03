@@ -9,9 +9,7 @@ import test3.bean.CheckCodes;
 import test3.bean.FileSplitInfo;
 import test3.bean.FileSplitItem;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.Date;
 
 import static org.asynchttpclient.Dsl.*;
@@ -23,7 +21,7 @@ public class test {
         AppUpgradeInfo appUpgradeInfo = new AppUpgradeInfo();
         boolean zipped = true;
         String apkUrl = "https://www.fjj.us/cache/app-release.apk";
-        String releaseNotesString = "- 已启用连接状态检查机制，在某些地区运营商可能会出现误报网路未连接!!!\n" + "- 哟与新下载方式人工操作过于复杂，故现改为自动化！\n" + "- 从6.2开始仅大更新会显示在这里\n" + "- 请注意：国内网络下载速率可能会不佳！！！\n" + "- 释出于" + new Date().toString() + "\n" + "- 使用自动化程式生成" + "\n" + "- 作者：爱笑的祥和是**";
+        String releaseNotesString = "\n---------------------------\n" + "- 已启用连接状态检查机制，在某些地区运营商可能会出现误报网路未连接!!!\n" + "- 哟与新下载方式人工操作过于复杂，故现改为自动化！\n" + "- 从6.2开始仅大更新会显示在这里\n" + "- 请注意：国内网络下载速率可能会不佳！！！\n" + "- 释出于" + new Date().toString() + "\n" + "- 使用自动化程式生成" + "\n" + "- 作者：爱笑的祥和是**";
         String dirPath = "C:\\Users\\jijiao\\IdeaProjects\\test\\src\\test3";
         String apkfile= "app-release.apk"; //文件的路径
         String file = "app-release.zip"; //文件的路径
@@ -52,6 +50,22 @@ public class test {
             }*/
         } catch (IOException ioException) {
             ioException.printStackTrace();
+        }
+        File updatelogfile = new File("E:\\AndroidStudioProjects\\April\\app\\src\\main\\assets\\updatelog.txt");
+        try {
+            StringBuilder updatelogStringBuilder = new StringBuilder();
+            int len;
+            char chs[] = new char[100];
+            FileReader fr = new FileReader(updatelogfile);
+            while((len = fr.read(chs)) != -1) {
+                updatelogStringBuilder.append(new String(chs, 0, len));
+            }
+            StringBuilder releaseNotesStringBuilder = new StringBuilder(releaseNotesString);
+            releaseNotesString = updatelogStringBuilder.append(releaseNotesStringBuilder).toString();
+            System.out.println(releaseNotesString);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
         }
         try {
             apkUrl = httpUtils.uploadFile(FileOperater.getFilePath(dirPath, apkfile));
