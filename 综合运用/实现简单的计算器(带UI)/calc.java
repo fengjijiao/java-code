@@ -60,6 +60,7 @@ public class calc extends JFrame implements ActionListener {
             keyJPanel.add(keys[i]);
             keys[i].addActionListener(this);
         }
+        keys[0].addActionListener(this);
         add(result, BorderLayout.NORTH);
         add(keyJPanel, BorderLayout.CENTER);
         add(key, BorderLayout.SOUTH);
@@ -148,7 +149,6 @@ public class calc extends JFrame implements ActionListener {
         if (curr == keys[15]) {
             if(inputOp == null) inputOp = new StringBuilder();
             inputOp.append(keys[15].getText().charAt(0));
-            System.out.println(inputOp.toString());
             refreshResult();
         }
     }
