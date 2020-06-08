@@ -1,11 +1,14 @@
-package text;
+package test9;
+
+import test8.Array;
+import test8.Stack;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+
+import javax.swing.*;
+
 
 public class calc extends JFrame implements ActionListener {
     Array ifArray = new Array();
@@ -14,6 +17,7 @@ public class calc extends JFrame implements ActionListener {
     Stack opStack = new Stack();
     JButton[] keys = new JButton[18];
     JTextField result = new JTextField(20);
+    StringBuilder inputOp;
 
     calc() {
         JPanel keyJPanel = new JPanel();
@@ -59,7 +63,7 @@ public class calc extends JFrame implements ActionListener {
         add(result, BorderLayout.NORTH);
         add(keyJPanel, BorderLayout.CENTER);
         add(key, BorderLayout.SOUTH);
-        setTitle("简易计算器");
+        setTitle("计算器");
         setLocation(100, 100);
         setSize(200, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -73,33 +77,64 @@ public class calc extends JFrame implements ActionListener {
             refreshResult();
             return;
         }
+        if(curr == keys[17]) {
+            if(inputOp != null) {
+                inputOp.deleteCharAt(inputOp.length() - 1);
+            }else {
+                ifArray.pop(ifArray.getArraySize() - 1);
+            }
+            refreshResult();
+            return;
+        }
         for (int i = 0; i <= 9; i++) {
             if (curr == keys[i]) {
-                ifArray.push(Double.parseDouble(keys[i].getText()));
+                if(inputOp == null) inputOp = new StringBuilder();
+                inputOp.append(keys[i].getText().charAt(0));
                 refreshResult();
+                return;
             }
         }
         if (curr == keys[10]) {
+            if(inputOp != null) {
+                ifArray.push(Double.parseDouble(inputOp.toString()));
+                inputOp = null;
+            }
             ifArray.push(keys[10].getText().charAt(0));
             refreshResult();
             return;
         }
         if (curr == keys[11]) {
+            if(inputOp != null) {
+                ifArray.push(Double.parseDouble(inputOp.toString()));
+                inputOp = null;
+            }
             ifArray.push(keys[11].getText().charAt(0));
             refreshResult();
             return;
         }
         if (curr == keys[12]) {
+            if(inputOp != null) {
+                ifArray.push(Double.parseDouble(inputOp.toString()));
+                inputOp = null;
+            }
             ifArray.push(keys[12].getText().charAt(0));
             refreshResult();
             return;
         }
         if (curr == keys[13]) {
+            if(inputOp != null) {
+                ifArray.push(Double.parseDouble(inputOp.toString()));
+                inputOp = null;
+            }
             ifArray.push(keys[13].getText().charAt(0));
             refreshResult();
             return;
         }
         if (curr == keys[14]) {
+            if(inputOp != null) {
+                ifArray.push(Double.parseDouble(inputOp.toString()));
+                inputOp = null;
+            }
             stackInitialization();
             Double res = overallCalculation();
             if (isCanInteger(res)) {
@@ -108,11 +143,13 @@ public class calc extends JFrame implements ActionListener {
                 result.setText(String.valueOf(res));
             }
             clearAll();
+            return;
         }
         if (curr == keys[15]) {
-            ifArray.push(keys[15].getText().charAt(0));
+            if(inputOp == null) inputOp = new StringBuilder();
+            inputOp.append(keys[15].getText().charAt(0));
+            System.out.println(inputOp.toString());
             refreshResult();
-            return;
         }
     }
 
@@ -122,8 +159,8 @@ public class calc extends JFrame implements ActionListener {
             if (obj instanceof Character) {
                 char op = (char) obj;
                 if (opStack.isEmpty() ||
-                    (getPriority((Character) opStack.getStackTop()) < getPriority(
-                        op))) {
+                        (getPriority((Character) opStack.getStackTop()) < getPriority(
+                                op))) {
                     opStack.push(op);
                 } else {
                     while (getPriority((Character) opStack.getStackTop()) >= getPriority(
@@ -223,7 +260,7 @@ public class calc extends JFrame implements ActionListener {
             }
             i++;
         }
-        result.setText(stringBuilder.toString());
+        result.setText(stringBuilder.toString()+((inputOp != null)?inputOp.toString():""));
     }
 
     private void clearAll() {
