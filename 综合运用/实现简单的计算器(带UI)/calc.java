@@ -79,7 +79,7 @@ public class calc extends JFrame implements ActionListener {
         }
         if(curr == keys[17]) {
             if(inputOp != null) {
-                inputOp.deleteCharAt(inputOp.length() - 1);
+                if(inputOp.length() > 0) inputOp.deleteCharAt(inputOp.length() - 1);
             }else {
                 ifArray.pop(ifArray.getArraySize() - 1);
             }
