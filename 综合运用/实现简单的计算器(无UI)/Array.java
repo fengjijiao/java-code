@@ -37,6 +37,10 @@ public class Array {
         return obj;
     }
 
+    public void clear() {
+        array.clear();
+    }
+
     public String getAllElement() {
         return array.toString();
     }

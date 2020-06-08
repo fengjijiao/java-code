@@ -7,14 +7,13 @@ import java.util.regex.Pattern;
 public class Main {
     private static Array ifArray, sfArray;
     private static Stack opStack, nvStack;
-    private static Scanner scanner;
-    private static String last;
     public static void main(String[] args) {
-        ifArray = new Array();//中缀表达式
-        sfArray = new Array();//后缀表达式
-        opStack = new Stack();//操作符栈
-        nvStack = new Stack();//运算结果栈
-        scanner = new Scanner(System.in);
+        ifArray = new Array();
+        sfArray = new Array();
+        opStack = new Stack();
+        nvStack = new Stack();
+        Scanner scanner = new Scanner(System.in);
+        String last;
         while (scanner.hasNext()) {
             last = scanner.next();
             if(last.equals("=")) break;
@@ -62,25 +61,18 @@ public class Main {
         while (!opStack.isEmpty()) {
             sfArray.push(opStack.pop());
         }
-        System.out.println("sfArray:"+sfArray.getAllElement());
     }
 
     private static Double overallCalculation() {
-        //开始计算
         while (!sfArray.isEmpty()) {
-            System.out.println(sfArray.get());
             if(sfArray.get() instanceof Character) {
                 char op = (char) sfArray.pop();
-                System.out.println("op:"+op);
                 double p2 = (double) nvStack.pop();
-                System.out.println("p2:"+p2);
                 double p1 = (double) nvStack.pop();
-                System.out.println("p1:"+p1);
                 double res = partialCalculation(p1,p2,op);
                 nvStack.push(res);
             }else if(sfArray.get() instanceof Double) {
                 nvStack.push(sfArray.pop());
-                System.out.println("nvStack:"+nvStack.getAllElement());
             }
         }
         return (Double) nvStack.getStackTop();

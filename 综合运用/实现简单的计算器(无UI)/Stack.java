@@ -25,6 +25,10 @@ public class Stack {
         return obj;
     }
 
+    public void clear() {
+        stack.clear();
+    }
+
     public String getAllElement() {
         return stack.toString();
     }
